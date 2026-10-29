@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sifat Voice Type — আধুনিক AI ভয়েস টাইপিং সফটওয়্যার</title>
+    <link rel="icon" type="image/png" href="app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0D14;
+            --bg-card: #0F162A;
+            --border: #1E294B;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background glow effect */
+        .glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, rgba(10, 13, 20, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .brand img {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(15, 22, 42, 0.8);
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: #18223D;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 900px;
+            margin: 60px auto 40px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            line-height: 1.25;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #60A5FA 0%, #38BDF8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 19px;
+            max-width: 720px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Visual Interactive Demo / Preview Box */
+        .preview-box {
+            max-width: 960px;
+            margin: 40px auto 80px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .window-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #EF4444; }
+        .dot-yellow { background: #F59E0B; }
+        .dot-green { background: #10B981; }
+
+        .demo-screen {
+            background: #0A0E1A;
+            border: 1px solid #1F2A4C;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+        }
+
+        .demo-bubble {
+            background: #18223D;
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: #E2E8F0;
+        }
+
+        .demo-badge {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #2563EB;
+            color: #fff;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+
+        /* Features */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title h2 {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #3B82F6;
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 34px; }
+            .hero p { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="brand">
+            <img src="app_icon.png" alt="Sifat Voice Type Logo">
+            <span>Sifat Voice Type</span>
+        </a>
+        <div class="nav-links">
+            <a href="https://github.com" target="_blank" class="btn-outline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub এ প্রজেক্ট দেখুন
+            </a>
+            <a href="SifatVoiceType_Setup_v1.0.0.exe" class="btn-primary" download>
+                📥 Get Application (.exe)
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">✨ সম্পূর্ণ নতুন সংস্করণ v1.0.0 উন্মোচিত</div>
+        <h1>যেকোনো উইন্ডোজ অ্যাপ্লিকেশনে<br><span>স্মার্ট বাংলা ও ইংরেজি</span> ভয়েস টাইপিং</h1>
+        <p>কথা বলুন নিজের স্বাভাবিক স্বর ও আবেগে। ওয়ার্ড, নোটপ্যাড, ব্রাউজার কিংবা মেসেঞ্জার—যেকোনো জায়গায় এক নিমেষে ভয়েস রূপান্তর করুন নিখুঁত টেক্সটে।</p>
+        <div class="hero-actions">
+            <a href="SifatVoiceType_Setup_v1.0.0.exe" class="btn-primary" download style="font-size: 17px; padding: 14px 36px;">
+                🚀 সফটওয়্যারটি ডাউনলোড করুন (Installer .exe)
+            </a>
+            <a href="https://github.com" target="_blank" class="btn-outline" style="font-size: 16px; padding: 14px 28px;">
+                ⭐ View on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Visual Interactive Demo Preview -->
+    <div class="preview-box">
+        <div class="window-bar">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+            <span style="font-size: 13px; color: var(--text-muted); margin-left: 10px;">Sifat Voice Type — Live Preview</span>
+        </div>
+        <div class="demo-screen">
+            <div class="demo-bubble">
+                <span class="demo-badge">বাংলা মোড</span>
+                "আমার নাম সিফাত, আমি কম্পিউটার সায়েন্সে পড়াশোনা করছি। আপনি কেমন আছেন?"
+            </div>
+            <div class="demo-bubble">
+                <span class="demo-badge" style="background:#8B5CF6;">মিক্সড মোড</span>
+                "আমি নিয়মিত প্রোগ্রামিং করি so guys now I am a web developer এবং নতুন নতুন প্রজেক্ট তৈরি করতে ভালোবাসি।"
+            </div>
+            <div class="demo-bubble" style="border-left-color: #F59E0B; margin-bottom: 0;">
+                <span class="demo-badge" style="background:#D97706;">স্মার্ট ক্লিপবোর্ড</span>
+                📋 কপি করা যেকোনো টেক্সট কিংবা ব্রাউজার থেকে কপি করা ছবি এক ক্লিকে স্থায়ীভাবে সাজানো থাকে।
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <section class="features">
+        <div class="section-title">
+            <h2>শক্তিশালী ও আধুনিক ফিচারসমূহ</h2>
+            <p>আপনার প্রতিদিনের টাইপিং ও কাজকে ১০ গুণ দ্রুত করতে যা যা প্রয়োজন</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">🎙️</div>
+                <h3>ন্যাচারাল এক্সপ্রেশন পাঙ্কচুয়েশন</h3>
+                <p>মুখে জোর করে দাঁড়ি বা কমা বলতে হবে না। আপনার কথার বিরতি, প্রশ্নবোধক ভাব এবং সমাপ্তি অনুযায়ী সফটওয়্যারটি নিজেই সঠিক জায়গায় দাঁড়ি, কমা ও প্রশ্নচিহ্ন বসিয়ে দেবে।</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <h3>অ্যাডভান্সড মিক্সড স্পিচ ফ্লো</h3>
+                <p>বাংলা বলতে বলতে হঠাৎ একটানা ইংরেজিতে কথা বলা শুরু করলেও সফটওয়্যারটি স্বয়ংক্রিয়ভাবে বুঝে নিয়ে ইংরেজি হরফে রূপান্তর করে দেয়।</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>সেন্ট্রাল ক্লিপবোর্ড ও ইমেজ হিস্ট্রি</h3>
+                <p>Ctrl + C চেপে ব্রাউজার থেকে কোনো ছবি কিংবা যেকোনো টেক্সট কপি করলেই তা স্ক্রিনের মাঝখানে ভাসমান ক্লিপবোর্ডে স্থায়ীভাবে জমা থাকবে।</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>গ্লোবাল হটকি সাপোর্ট</h3>
+                <p>Ctrl+Win চেপে বাংলা, Shift+Win চেপে ইংরেজি, এবং Ctrl+Alt+Win চেপে মিক্সড মোডে কথা বলুন। উইন্ডোজের যেকোনো সফটওয়্যারেই এটি সাথে সাথে কাজ করে।</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💻</div>
+                <h3>পিসি অন হতেই ব্যাকগ্রাউন্ড অটো-রান</h3>
+                <p>কম্পিউটার অন করলেই ব্যাকগ্রাউন্ড ও সিস্টেম ট্রেতে স্বয়ংক্রিয়ভাবে চালু হয়ে যায়। প্রতিবার অ্যাডমিনিস্ট্রেটর হিসেবে রান করার কোনো ঝামেলা নেই।</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔒</div>
+                <h3>১০০% লোকাল প্রাইভেসি ও ফ্রি</h3>
+                <p>আপনার ক্লিপবোর্ড এবং রেকর্ডিং হিস্ট্রি সম্পূর্ণ আপনার পিসির ভেতর এনক্রিপ্টেড ও লোকাল মেমরিতে সংরক্ষিত থাকে। কোনো ডাটা বাইরে পাঠানো হয় না।</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 <strong>Sifat Voice Type</strong>. Created with ❤️ by <strong>Majharul Islam Sifat</strong>.</p>
+        <p style="margin-top: 8px; font-size: 13px;">Open Source AI Productivity Project for Windows</p>
+    </footer>
+
+</body>
+</html>
+

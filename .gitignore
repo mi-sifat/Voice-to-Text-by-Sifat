@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Pytest & IDE
+.pytest_cache/
+.vscode/
+.idea/
+
+# Local secrets & configs
+.env
+*.wav
+*.mp3
+
+# Ignore large exe files from git push (GitHub has a strict 100MB file limit)
+*.exe
+installer_output/
+website/*.exe
