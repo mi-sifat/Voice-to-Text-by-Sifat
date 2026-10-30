@@ -5,6 +5,7 @@ import pyperclip
 import pyautogui
 from PySide6.QtGui import QGuiApplication, QImage, QPixmap
 from PySide6.QtCore import QBuffer, QIODevice
+from app.clipboard_helper import set_windows_clipboard_image
 
 pyautogui.FAILSAFE = False
 pyautogui.PAUSE = 0.05
@@ -74,8 +75,8 @@ class TextInserter:
 
     def insert_image(self, image_path: str, target_hwnd: int = 0) -> bool:
         """
-        Copies image from file to Windows clipboard via PySide6 QClipboard and sends Ctrl+V.
-        Supports PNG, BMP, JPEG and preserves original image format.
+        Copies image from file to Windows clipboard (both native CF_DIB and QClipboard)
+        and sends Ctrl+V to the target window.
         """
         if not image_path or not os.path.exists(image_path):
             return False
@@ -85,14 +86,9 @@ class TextInserter:
             time.sleep(0.15)
 
         try:
-            qimg = QImage(image_path)
-            if qimg.isNull():
-                return False
-
-            cb = QGuiApplication.clipboard()
-            if cb:
-                cb.setImage(qimg)
-                time.sleep(max(self.paste_delay, 0.12))
+            ok = set_windows_clipboard_image(image_path)
+            if ok:
+                time.sleep(max(self.paste_delay, 0.15))
                 pyautogui.hotkey('ctrl', 'v')
                 time.sleep(0.08)
                 return True

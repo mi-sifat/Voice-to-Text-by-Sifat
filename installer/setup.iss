@@ -2,7 +2,7 @@
 ; Production-grade installer for sharing and commercial distribution
 
 #define MyAppName "Sifat Voice Type"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "Majharul Islam Sifat"
 #define MyAppExeName "SifatVoiceType.exe"
 
@@ -24,7 +24,7 @@ DisableProgramGroupPage=yes
 
 ; Output Configuration
 OutputDir=..\installer_output
-OutputBaseFilename=SifatVoiceType_Setup_v1.1.0
+OutputBaseFilename=SifatVoiceType_Setup_v1.1.1
 SetupIconFile=..\app_icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 

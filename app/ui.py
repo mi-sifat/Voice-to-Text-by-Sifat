@@ -23,6 +23,7 @@ from app.text_inserter import TextInserter
 from app.hotkeys import GlobalHotkeyManager
 from app.key_recorder import KeyRecorderDialog
 from app.clipboard_popup import ClipboardPopupDialog
+from app.clipboard_helper import extract_clipboard_image, set_windows_clipboard_image
 from app.startup import set_start_with_windows, is_start_with_windows_enabled
 
 STYLE = """
@@ -612,21 +613,18 @@ class MainWindow(QMainWindow):
             if mime is None:
                 return
 
-            # Check if clipboard has an image (from browser "Copy Image", screenshots, Paint, etc.)
-            if mime.hasImage() or self._qclip.image() and not self._qclip.image().isNull():
-                qimg = self._qclip.image()
-                if not qimg.isNull():
-                    # Generate simple hash from image size and byte count to prevent duplicate re-adds
-                    img_sig = f"{qimg.width()}x{qimg.height()}_{qimg.bytesPerLine()}"
-                    if img_sig != self.last_image_hash:
-                        self.last_image_hash = img_sig
-                        # Save QImage to disk
-                        img_path = os.path.join(self.history.images_dir, f"clip_{int(time.time() * 1000)}.png")
-                        os.makedirs(self.history.images_dir, exist_ok=True)
-                        if qimg.save(img_path, "PNG"):
-                            self.history.add_entry(text="", language="", item_type="image", image_path=img_path)
-                            self._refresh_history()
-                            return
+            # Multi-tier image extraction (handles Chrome 'Copy image', Snipping Tool, CF_DIB, HTML <img>, files)
+            qimg, src = extract_clipboard_image(mime=mime, qclip=self._qclip)
+            if qimg is not None and not qimg.isNull():
+                img_sig = f"{qimg.width()}x{qimg.height()}_{qimg.bytesPerLine()}_{qimg.format().value}"
+                if img_sig != self.last_image_hash:
+                    self.last_image_hash = img_sig
+                    os.makedirs(self.history.images_dir, exist_ok=True)
+                    img_path = os.path.join(self.history.images_dir, f"clip_{int(time.time() * 1000)}.png")
+                    if qimg.save(img_path, "PNG"):
+                        self.history.add_entry(text="", language="", item_type="image", image_path=img_path)
+                        self._refresh_history()
+                        return
 
             # Check if clipboard has text
             if mime.hasText() or self._qclip.text():
@@ -817,10 +815,10 @@ class MainWindow(QMainWindow):
             for e in self.history.get_entries():
                 if e["id"] == eid:
                     if e.get("type") == "image" and e.get("image_path"):
-                        qimg = QImage(e["image_path"])
-                        if not qimg.isNull() and self._qclip:
-                            self._qclip.setImage(qimg)
+                        if set_windows_clipboard_image(e["image_path"], self._qclip):
                             self._set_status("Image Copied to Clipboard!", "#34D399")
+                        else:
+                            self._set_status("Failed to copy image", "#EF4444")
                     else:
                         pyperclip.copy(e.get("text", ""))
                         self._set_status("Text Copied!", "#34D399")

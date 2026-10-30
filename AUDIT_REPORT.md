@@ -22,4 +22,19 @@
 2. Update `app/ui.py` with custom Ctrl+V event filter to handle pasted images directly in main UI window.
 3. Enhance Inno Setup script (`installer/setup.iss`) to automatically kill running `SifatVoiceType.exe` processes during both install and uninstall.
 4. Clean build directories, generate fresh `dist/SifatVoiceType.exe`, verify build timestamp, and compile `installer_output/SifatVoiceType_Setup_v1.1.0.exe`.
-5. Run full test suite, commit changes to GitHub, and push.
+## 6. Image Clipboard Fix (v1.1.1)
+- **Problem**: When copying images from browsers (Chrome/Edge) or File Explorer, text (such as URLs, HTML tags `<img src="...">`, or local paths) was captured in clipboard history instead of the actual image data.
+- **Root Cause**: Chromium puts custom registered formats (`image/png`, `text/html`, `CF_DIB`) on the clipboard. PySide6 `QMimeData.hasImage()` returns `False` for `image/png` (it only checks Qt's internal `application/x-qt-image`), and `QClipboard.image()` returns null. This caused the clipboard listener to fall through to `mime.hasText()`, saving raw text/HTML instead of the image.
+- **Solution**:
+  - Implemented `app/clipboard_helper.py` with multi-tier image extraction:
+    1. Direct MIME formats (`image/png`, `image/jpeg`, `image/bmp`).
+    2. Qt `QClipboard.image()`.
+    3. Windows native `CF_DIB` / `CF_DIBV5` via PIL `ImageGrab.grabclipboard()`.
+    4. Local file URLs (`CF_HDROP` / `text/uri-list`) from Windows File Explorer.
+    5. HTML data URIs (`data:image/...;base64,...`) and web image URLs (`<img src="...">`).
+    6. Local file paths in text clipboard.
+  - Implemented `set_windows_clipboard_image()` using native Win32 `CF_DIB` (with 64-bit safe pointers) and `QClipboard` for 100% paste compatibility in MS Office, Paint, browsers, Discord, WhatsApp, and Telegram.
+  - Integrated with `TextInserter.insert_image()` and `MainWindow._on_clipboard_data_changed()`.
+  - Added full test suite in `tests/test_clipboard_helper.py` (all 16 tests passing).
+
+
