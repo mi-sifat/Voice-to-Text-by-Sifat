@@ -4,8 +4,8 @@ import threading
 import time
 from typing import Optional
 
-from PySide6.QtCore import Qt, Signal, Slot, QTimer
-from PySide6.QtGui import QFont, QAction, QIcon, QPixmap, QCursor
+from PySide6.QtCore import Qt, Signal, Slot, QTimer, QSize
+from PySide6.QtGui import QFont, QAction, QIcon, QPixmap, QCursor, QImage
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QComboBox, QTextEdit, QTabWidget, QListWidget,
@@ -794,8 +794,19 @@ class MainWindow(QMainWindow):
 
     def _refresh_history(self):
         self.list_history.clear()
+        self.list_history.setIconSize(QSize(36, 36))
         for e in self.history.get_entries():
-            item = QListWidgetItem(f"[{e['timestamp']}] ({e['language']}): {e['text']}")
+            item_type = e.get("type", "text")
+            ts = e.get("timestamp", "")
+            img_path = e.get("image_path")
+            if item_type == "image" and img_path and os.path.exists(img_path):
+                item = QListWidgetItem(f"[{ts}] 🖼️ [Image/ছবি]")
+                pix = QPixmap(img_path)
+                if not pix.isNull():
+                    item.setIcon(QIcon(pix.scaled(36, 36, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+            else:
+                lang = f"({e.get('language')})" if e.get('language') else ""
+                item = QListWidgetItem(f"[{ts}] {lang} {e.get('text', '')}")
             item.setData(Qt.UserRole, e["id"])
             self.list_history.addItem(item)
 
@@ -805,7 +816,14 @@ class MainWindow(QMainWindow):
             eid = item.data(Qt.UserRole)
             for e in self.history.get_entries():
                 if e["id"] == eid:
-                    pyperclip.copy(e["text"])
+                    if e.get("type") == "image" and e.get("image_path"):
+                        qimg = QImage(e["image_path"])
+                        if not qimg.isNull() and self._qclip:
+                            self._qclip.setImage(qimg)
+                            self._set_status("Image Copied to Clipboard!", "#34D399")
+                    else:
+                        pyperclip.copy(e.get("text", ""))
+                        self._set_status("Text Copied!", "#34D399")
                     return
 
     def _hist_delete(self):

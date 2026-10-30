@@ -8,7 +8,7 @@ from PySide6.QtGui import QKeySequence, QCursor, QFont, QIcon, QMouseEvent, QPix
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QPushButton, QApplication, QSizePolicy,
-    QFrame, QWidget
+    QFrame, QWidget, QSplitter
 )
 import os
 import pyperclip
@@ -99,10 +99,10 @@ class ClipboardPopupDialog(QDialog):
         self.target_hwnd = target_hwnd
         self.entries = entries
         self.setStyleSheet(_STYLE)
-        self.setMinimumWidth(580)
-        self.setMaximumWidth(750)
-        self.setMinimumHeight(420)
-        self.setMaximumHeight(580)
+        self.setMinimumWidth(680)
+        self.setMaximumWidth(840)
+        self.setMinimumHeight(460)
+        self.setMaximumHeight(600)
 
         self._drag_pos = None
 
@@ -110,8 +110,9 @@ class ClipboardPopupDialog(QDialog):
         self._center_on_screen()
         if self.list_widget.count() > 0:
             self.list_widget.setCurrentRow(0)
+            self._update_preview()
 
-    # ─── Build UI ──────────────────────────────────────────────────────────
+    # ─── Build UI ─────────────────────────────────────────────────────────────
 
     def _build_ui(self):
         root = QVBoxLayout(self)
@@ -140,17 +141,43 @@ class ClipboardPopupDialog(QDialog):
         root.addWidget(sep)
 
         # Hint
-        hint = QLabel("মাউস দিয়ে উইন্ডোটি যেকোনো জায়গায় সরানো যাবে • Enter/ডাবল ক্লিকে পেস্ট • Ctrl+C করা সবকিছু এখানে জমা থাকে")
+        hint = QLabel("মাউস দিয়ে উইন্ডোটি যেকোনো জায়গায় সরানো যাবে • Enter/ডাবল ক্লিকে পেস্ট • ব্রাউজার বা এক্সপ্লোরার থেকে কপি করা ছবি সহ সাপোর্ট করে")
         hint.setStyleSheet("color:#64748B;font-size:11px;")
         root.addWidget(hint)
 
+        # Splitter with List and Preview
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.setStyleSheet("QSplitter::handle { background-color: #1E2A4A; width: 2px; }")
+
         # List
         self.list_widget = QListWidget()
-        self.list_widget.setIconSize(QSize(48, 48))
+        self.list_widget.setIconSize(QSize(44, 44))
         self.list_widget.setAlternatingRowColors(False)
         self.list_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.list_widget.itemDoubleClicked.connect(self._on_select)
-        root.addWidget(self.list_widget)
+        self.list_widget.currentRowChanged.connect(self._update_preview)
+        splitter.addWidget(self.list_widget)
+
+        # Live Preview Panel
+        self.preview_panel = QFrame()
+        self.preview_panel.setStyleSheet("background-color:#080C16; border:1px solid #1F2A4C; border-radius:8px; padding:8px;")
+        prev_layout = QVBoxLayout(self.preview_panel)
+        prev_layout.setContentsMargins(8, 8, 8, 8)
+        
+        self.lbl_prev_title = QLabel("Pre-view:")
+        self.lbl_prev_title.setStyleSheet("color:#94A3B8; font-size:11px; font-weight:bold;")
+        prev_layout.addWidget(self.lbl_prev_title)
+
+        self.lbl_prev_content = QLabel("আইটেম সিলেক্ট করুন...")
+        self.lbl_prev_content.setAlignment(Qt.AlignCenter)
+        self.lbl_prev_content.setWordWrap(True)
+        self.lbl_prev_content.setStyleSheet("color:#E2E8F0; font-size:12px;")
+        prev_layout.addWidget(self.lbl_prev_content, 1)
+
+        splitter.addWidget(self.preview_panel)
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 2)
+        root.addWidget(splitter)
 
         # Populate
         if not self.entries:
@@ -169,9 +196,9 @@ class ClipboardPopupDialog(QDialog):
                     item = QListWidgetItem(f"🖼️ [Image/ছবি]   [{ts}]")
                     pix = QPixmap(img_path)
                     if not pix.isNull():
-                        item.setIcon(QIcon(pix.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+                        item.setIcon(QIcon(pix.scaled(44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
                 else:
-                    preview = text[:80] + ("…" if len(text) > 80 else "")
+                    preview = text[:60] + ("…" if len(text) > 60 else "")
                     prefix = "🎙️" if item_type == "voice" else "📋"
                     item = QListWidgetItem(f"{prefix} {preview}   [{ts}]")
 
@@ -208,7 +235,34 @@ class ClipboardPopupDialog(QDialog):
         btn_row.addWidget(cancel_btn)
         root.addLayout(btn_row)
 
-    # ─── Center on Screen ──────────────────────────────────────────────────
+    def _update_preview(self):
+        item = self.list_widget.currentItem()
+        if not item:
+            self.lbl_prev_content.setText("আইটেম সিলেক্ট করুন...")
+            self.lbl_prev_content.setPixmap(QPixmap())
+            return
+        entry = item.data(Qt.UserRole)
+        if not entry:
+            return
+
+        item_type = entry.get("type", "text")
+        if item_type == "image":
+            img_path = entry.get("image_path")
+            if img_path and os.path.exists(img_path):
+                pix = QPixmap(img_path)
+                if not pix.isNull():
+                    self.lbl_prev_title.setText(f"Image Preview ({pix.width()}x{pix.height()}):")
+                    scaled = pix.scaled(240, 240, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    self.lbl_prev_content.setPixmap(scaled)
+                    return
+            self.lbl_prev_content.setText("[Image unavailable]")
+            self.lbl_prev_content.setPixmap(QPixmap())
+        else:
+            self.lbl_prev_title.setText("Text Preview:")
+            self.lbl_prev_content.setPixmap(QPixmap())
+            self.lbl_prev_content.setText(entry.get("text", ""))
+
+    # ─── Center on Screen ─────────────────────────────────────────────────────
 
     def _center_on_screen(self):
         """Always places the popup in the exact center of the active screen."""
@@ -219,15 +273,15 @@ class ClipboardPopupDialog(QDialog):
             screen = QApplication.primaryScreen()
         
         geom = screen.availableGeometry()
-        w = max(self.width(), 600)
-        h = max(self.height(), 440)
+        w = max(self.width(), 700)
+        h = max(self.height(), 480)
         
         x = geom.x() + (geom.width() - w) // 2
         y = geom.y() + (geom.height() - h) // 2
         
         self.setGeometry(x, y, w, h)
 
-    # ─── Drag to Move Window ───────────────────────────────────────────────
+    # ─── Drag to Move Window ──────────────────────────────────────────────────
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -242,7 +296,7 @@ class ClipboardPopupDialog(QDialog):
     def mouseReleaseEvent(self, event: QMouseEvent):
         self._drag_pos = None
 
-    # ─── Keyboard Events ───────────────────────────────────────────────────
+    # ─── Keyboard Events ──────────────────────────────────────────────────────
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -272,6 +326,8 @@ class ClipboardPopupDialog(QDialog):
     def _on_clear_all(self):
         self.clear_requested.emit()
         self.list_widget.clear()
+        self.lbl_prev_content.setText("(ক্লিপবোর্ড খালি করা হয়েছে)")
+        self.lbl_prev_content.setPixmap(QPixmap())
         placeholder = QListWidgetItem("(ক্লিপবোর্ড খালি করা হয়েছে)")
         placeholder.setFlags(Qt.NoItemFlags)
         placeholder.setForeground(Qt.gray)

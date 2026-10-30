@@ -2,7 +2,7 @@
 ; Production-grade installer for sharing and commercial distribution
 
 #define MyAppName "Sifat Voice Type"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Majharul Islam Sifat"
 #define MyAppExeName "SifatVoiceType.exe"
 
@@ -24,7 +24,7 @@ DisableProgramGroupPage=yes
 
 ; Output Configuration
 OutputDir=..\installer_output
-OutputBaseFilename=SifatVoiceType_Setup_v1.0.0
+OutputBaseFilename=SifatVoiceType_Setup_v1.1.0
 SetupIconFile=..\app_icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
@@ -41,6 +41,10 @@ AppMutex=Global\SifatVoiceType_SingleInstance_Mutex
 
 ; Modern UI Style
 WizardStyle=modern
+
+; Close applications using files being updated
+CloseApplications=yes
+RestartApplications=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -73,12 +77,39 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-; Clean up any logs or temp files generated in app directory
+; Clean up any logs, temp files, or clipboard caches generated in app directory
 Type: filesandordirs; Name: "{app}"
 
 [Code]
+// Helper function to safely terminate running application instances using Windows taskkill
+procedure TerminateAppProcess();
+var
+  ResultCode: Integer;
+begin
+  Exec('taskkill.exe', '/F /IM ' + '{#MyAppExeName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  // Terminate any running instance before running the installer
+  TerminateAppProcess();
+  Result := True;
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+  // Terminate any running instance or background tray icon before uninstalling
+  TerminateAppProcess();
+  Result := True;
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usUninstall then
+  begin
+    // Double ensure process is completely killed
+    TerminateAppProcess();
+    // Clean Windows Startup registry entry
     RegDeleteValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'SifatVoiceType');
+  end;
 end;
