@@ -624,7 +624,7 @@ class MainWindow(QMainWindow):
                     if qimg.save(img_path, "PNG"):
                         self.history.add_entry(text="", language="", item_type="image", image_path=img_path)
                         self._refresh_history()
-                        return
+                return  # Always return: Never fall through to text handler when clipboard has an image
 
             # Check if clipboard has text
             if mime.hasText() or self._qclip.text():

@@ -50,3 +50,25 @@ def test_history_management():
         # Clear all
         hm.clear()
         assert len(hm.get_entries()) == 0
+
+def test_history_consecutive_different_images():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        hm = HistoryManager(config_dir=tmpdir)
+        # Add 2 different images
+        img1 = os.path.join(tmpdir, "img1.png")
+        img2 = os.path.join(tmpdir, "img2.png")
+        with open(img1, "w") as f: f.write("dummy1")
+        with open(img2, "w") as f: f.write("dummy2")
+
+        e1 = hm.add_entry(text="", item_type="image", image_path=img1)
+        e2 = hm.add_entry(text="", item_type="image", image_path=img2)
+
+        # Both should be present (not rejected as duplicates because paths differ)
+        entries = hm.get_entries()
+        assert len(entries) == 2
+        assert entries[0]["image_path"] == img2
+        assert entries[1]["image_path"] == img1
+
+        # Adding same image path again should be deduplicated
+        e3 = hm.add_entry(text="", item_type="image", image_path=img2)
+        assert len(hm.get_entries()) == 2

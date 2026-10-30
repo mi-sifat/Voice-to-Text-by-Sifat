@@ -49,8 +49,14 @@ class HistoryManager:
             return {}
 
         # Don't add duplicate if the newest entry is identical
-        if self.entries and self.entries[0].get("text") == text and self.entries[0].get("type") == item_type:
-            return self.entries[0]
+        if self.entries:
+            latest = self.entries[0]
+            if latest.get("type") == item_type:
+                if item_type == "image":
+                    if latest.get("image_path") == image_path:
+                        return latest
+                elif latest.get("text") == text:
+                    return latest
 
         entry_id = int(time.time() * 1000)
         existing_ids = {e.get("id") for e in self.entries}

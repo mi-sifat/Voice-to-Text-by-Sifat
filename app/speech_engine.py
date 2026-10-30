@@ -178,14 +178,63 @@ def auto_punctuate_by_expression(text: str, language: str = "bn-BD") -> str:
     return formatted.strip()
 
 
+# Contextual correction patterns for common Google Speech Recognition phoneme and semantic confusions
+BENGALI_SPEECH_CORRECTIONS = [
+    # 1. 'গীতা' vs 'গিটার' disambiguation based on reading/sacred context
+    (r'(?<!\S)(?:গিটার|গীটার)\s+(পড়া|পড়লে|পড়ে|পড়ি|পড়ব|পড়ছেন|পড়তে|পাঠ|শ্লোক|গ্রন্থ|বই|ধর্ম|বাণী|অধ্যায়)', r'গীতা \1'),
+    (r'(ভগবদ|ভগবদ্|ভগবত|শ্রীমদ|শ্রীমদ্ভগবদ্|শ্রীমদ্ভগবত)\s*(?:গিটার|গীটার)', r'\1গীতা'),
+    (r'(?<!\S)(পবিত্র|শ্রীশ্রী|শ্রীমদ)\s+(?:গিটার|গীটার)(?!\S)', r'\1 গীতা'),
+
+    # 2. 'accuracy' / 'একিউরেসি' phonetics
+    (r'(?<!\S)এ\s+করেন\s+সেটা(?!\S)', 'accuracy টা'),
+    (r'(?<!\S)এ\s+করেন\s+সে(?!\S)', 'accuracy'),
+    (r'(?<!\S)এক\s+করেন\s+সেটা(?!\S)', 'accuracy টা'),
+    (r'(?<!\S)(?:একরেন্সি|একুরেসি|এ\s+কুরেশি)(?!\S)', 'accuracy'),
+
+    # 3. 'প্রেস রিলিজ' / 'প্রেস'
+    (r'(?<!\S)পেস\s+রিলিজ(?!\S)', 'প্রেস রিলিজ'),
+    (r'(?<!\S)ব্রেসলেট\s+সাথে\s+সাথে(?!\S)', 'প্রেস রিলিজের সাথে সাথে'),
+    (r'(?<!\S)পেস\s+করে(?!\S)', 'প্রেস করে'),
+    (r'(?<!\S)পেস\s+বাটন(?!\S)', 'প্রেস বাটন'),
+
+    # 4. Spoken tech and product terms
+    (r'(?<!\S)দাম\s+ব্রান্ড(?!\S)', 'দামি ব্র্যান্ড'),
+    (r'(?<!\S)ক্লিপ\s+বোর্ড(?!\S)', 'ক্লিপবোর্ড'),
+    (r'(?<!\S)শর্ট\s+কাট(?!\S)', 'শর্টকাট'),
+    (r'(?<!\S)ইন\s+স্টল(?!\S)', 'ইনস্টল'),
+    (r'(?<!\S)আন\s+ইন\s*স্টল(?!\S)', 'আনইন্সটল'),
+    (r'(?<!\S)স্ক্রিন\s+শট(?!\S)', 'স্ক্রিনশট'),
+    (r'(?<!\S)মাইক্রো\s+ফোন(?!\S)', 'মাইক্রোফোন'),
+    (r'(?<!\S)পপ\s+আপ(?!\S)', 'পপআপ'),
+    (r'(?<!\S)ড্রপ\s+ডাউন(?!\S)', 'ড্রপডাউন'),
+    (r'(?<!\S)অন\s+লাইন(?!\S)', 'অনলাইন'),
+    (r'(?<!\S)অফ\s+লাইন(?!\S)', 'অফলাইন'),
+    (r'(?<!\S)পাস\s+ওয়ার্ড(?!\S)', 'পাসওয়ার্ড'),
+    (r'(?<!\S)ইউজার\s+নেম(?!\S)', 'ইউজারনেম'),
+    (r'(?<!\S)ভয়েস\s+টাইপিং(?!\S)', 'voice typing'),
+    (r'(?<!\S)মিক্স\s+মোড(?!\S)', 'মিক্স মোড'),
+    (r'(?<!\S)মিক্সড\s+মোড(?!\S)', 'মিক্স মোড'),
+]
+
+
+def apply_bengali_speech_corrections(text: str) -> str:
+    """Corrects known contextual and phonetic misrecognitions from Google Speech API."""
+    if not text:
+        return text
+    for pattern, replacement in BENGALI_SPEECH_CORRECTIONS:
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    return text
+
+
 class SpeechEngine:
     """Handles audio transcription supporting Bengali, English, and auto/mixed speech."""
 
     def __init__(self, sample_rate: int = 16000):
         self.sample_rate = sample_rate
         self.recognizer = sr.Recognizer()
-        self.recognizer.energy_threshold = 300
+        self.recognizer.energy_threshold = 250
         self.recognizer.dynamic_energy_threshold = True
+        self.recognizer.pause_threshold = 0.8
 
     def transcribe(self, wav_bytes: bytes, language: str = "bn-BD") -> str:
         """
@@ -262,6 +311,10 @@ class SpeechEngine:
             return ""
 
         result = raw_text.strip()
+
+        # Apply Bengali contextual and phonetic speech corrections
+        if language in ("bn-BD", "auto"):
+            result = apply_bengali_speech_corrections(result)
 
         # Apply expression-based natural punctuation (clean & no auto-danda/comma on release)
         return auto_punctuate_by_expression(result, language=language)

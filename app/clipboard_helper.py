@@ -179,39 +179,60 @@ def extract_clipboard_image(mime: Optional[QMimeData] = None, qclip = None) -> T
 
 def set_windows_clipboard_image(image_path: str, qclip = None) -> bool:
     """
-    Sets the image on Windows clipboard using native Win32 CF_DIB (and QClipboard fallback)
-    for 100% paste compatibility across all applications without thread conflicts.
+    Sets the image on Windows clipboard using native Win32 registered PNG and CF_DIB
+    for 100% paste compatibility across all desktop and web applications (Chrome, Office, Paint, Discord).
     """
     if not image_path or not os.path.isfile(image_path):
         return False
 
-    # 1. Native Windows CF_DIB via Win32 API (standard for all Windows apps)
+    success = False
+
+    # 1. Native Windows CF_PNG and CF_DIB via Win32 API
     if Image is not None:
         try:
             pil_img = Image.open(image_path)
-            output = io.BytesIO()
-            pil_img.convert("RGB").save(output, format="BMP")
-            data = output.getvalue()[14:]  # Strip 14-byte BITMAPFILEHEADER
-            output.close()
 
-            h_mem = kernel32.GlobalAlloc(GMEM_MOVEABLE, len(data))
-            if h_mem:
-                ptr = kernel32.GlobalLock(h_mem)
-                if ptr:
-                    ctypes.memmove(ptr, data, len(data))
-                    kernel32.GlobalUnlock(h_mem)
+            # PNG bytes for browsers & modern web apps (Chrome, Edge, WhatsApp Web, Discord, Facebook)
+            png_io = io.BytesIO()
+            pil_img.save(png_io, format="PNG")
+            png_bytes = png_io.getvalue()
+            png_io.close()
 
-                    for _ in range(5):
-                        if user32.OpenClipboard(0):
-                            try:
-                                user32.EmptyClipboard()
-                                res = user32.SetClipboardData(CF_DIB, h_mem)
-                                if res:
-                                    return True
-                            finally:
-                                user32.CloseClipboard()
-                            break
-                        time.sleep(0.02)
+            # DIB bytes for standard Windows apps (Word, Paint, PowerPoint, WordPad)
+            bmp_io = io.BytesIO()
+            pil_img.convert("RGB").save(bmp_io, format="BMP")
+            dib_bytes = bmp_io.getvalue()[14:]  # Strip 14-byte BITMAPFILEHEADER
+            bmp_io.close()
+
+            h_png = kernel32.GlobalAlloc(GMEM_MOVEABLE, len(png_bytes))
+            if h_png:
+                ptr_png = kernel32.GlobalLock(h_png)
+                if ptr_png:
+                    ctypes.memmove(ptr_png, png_bytes, len(png_bytes))
+                    kernel32.GlobalUnlock(h_png)
+
+            h_dib = kernel32.GlobalAlloc(GMEM_MOVEABLE, len(dib_bytes))
+            if h_dib:
+                ptr_dib = kernel32.GlobalLock(h_dib)
+                if ptr_dib:
+                    ctypes.memmove(ptr_dib, dib_bytes, len(dib_bytes))
+                    kernel32.GlobalUnlock(h_dib)
+
+            cf_png = user32.RegisterClipboardFormatW("PNG")
+
+            for _ in range(5):
+                if user32.OpenClipboard(0):
+                    try:
+                        user32.EmptyClipboard()
+                        if h_png and cf_png:
+                            user32.SetClipboardData(cf_png, h_png)
+                        if h_dib:
+                            user32.SetClipboardData(CF_DIB, h_dib)
+                        success = True
+                    finally:
+                        user32.CloseClipboard()
+                    break
+                time.sleep(0.02)
         except Exception:
             pass
 
@@ -224,8 +245,8 @@ def set_windows_clipboard_image(image_path: str, qclip = None) -> bool:
                 qimg = QImage(image_path)
                 if not qimg.isNull():
                     cb.setImage(qimg)
-                    return True
+                    success = True
     except Exception:
         pass
 
-    return False
+    return success

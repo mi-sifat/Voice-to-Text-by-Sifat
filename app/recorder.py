@@ -232,6 +232,15 @@ class AudioRecorder:
             audio_data = np.concatenate(self._frames, axis=0)
             self._frames.clear()
 
+        # Audio Gain Normalization: ensure optimal loudness for Google Speech Recognition
+        if len(audio_data) > 0:
+            max_val = float(np.max(np.abs(audio_data)))
+            if max_val > 150:
+                target_peak = 25000.0  # ~76% of int16 max
+                gain = min(target_peak / max_val, 4.5)  # Safe gain up to 4.5x
+                if gain > 1.05:
+                    audio_data = np.clip(audio_data * gain, -32767, 32767).astype(np.int16)
+
         # Write WAV buffer
         wav_buffer = io.BytesIO()
         with wave.open(wav_buffer, "wb") as wf:
