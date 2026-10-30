@@ -184,9 +184,8 @@ def auto_punctuate_by_expression(text: str, language: str = "bn-BD") -> str:
         is_last = (i == n - 1)
 
         if is_last:
-            if not result[-1].endswith(('।', '?', '!', ',')):
-                mark = '?' if sentence_has_question else '।'
-                result[-1] = result[-1] + mark
+            if sentence_has_question and not result[-1].endswith(('।', '?', '!', ',')):
+                result[-1] = result[-1] + '?'
         elif is_terminal:
             next_w = re.sub(r'[^\w\u0980-\u09FF]', '', words[i + 1])
             particles = {'না', 'নি', 'তো', 'কি', 'কী', 'যে', 'বা', 'এবং', 'ও', 'আর', 'কিনা', 'কখন'}

@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sifat Voice Type — আধুনিক AI ভয়েস টাইপিং সফটওয়্যার</title>
+    <title>Sifat Voice Type — আধুনিক AI ভয়েস টাইপিং ও ক্লিপবোর্ড সফটওয়্যার</title>
     <link rel="icon" type="image/png" href="app_icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0A0D14;
-            --bg-card: #0F162A;
-            --border: #1E294B;
+            --bg-dark: #07090E;
+            --bg-card: #0D1527;
+            --border: #1E2D4A;
             --primary: #2563EB;
             --primary-hover: #1D4ED8;
             --accent: #38BDF8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
+            --card-hover: #131E38;
         }
 
         * {
@@ -34,24 +36,24 @@
             overflow-x: hidden;
         }
 
-        /* Background glow effect */
+        /* Ambient glowing background */
         .glow {
             position: absolute;
-            top: -100px;
+            top: -120px;
             left: 50%;
             transform: translateX(-50%);
-            width: 700px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, rgba(10, 13, 20, 0) 70%);
+            width: 850px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, rgba(7, 9, 14, 0) 70%);
             z-index: -1;
             pointer-events: none;
         }
 
-        /* Navbar */
+        /* Navigation */
         nav {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 24px 20px;
+            padding: 22px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -64,14 +66,14 @@
             text-decoration: none;
             color: #fff;
             font-weight: 700;
-            font-size: 20px;
+            font-size: 21px;
         }
 
         .brand img {
             width: 44px;
             height: 44px;
-            border-radius: 10px;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.45);
         }
 
         .nav-links {
@@ -84,20 +86,20 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
+            padding: 10px 22px;
             border-radius: 10px;
             border: 1px solid var(--border);
-            background: rgba(15, 22, 42, 0.8);
+            background: rgba(13, 21, 39, 0.85);
             color: var(--text-main);
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .btn-outline:hover {
-            border-color: var(--primary);
-            background: #18223D;
+            border-color: var(--accent);
+            background: #15223E;
             color: #fff;
             transform: translateY(-2px);
         }
@@ -105,7 +107,7 @@
         .btn-primary {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             padding: 12px 28px;
             border-radius: 10px;
             background: var(--primary);
@@ -113,32 +115,32 @@
             text-decoration: none;
             font-weight: 700;
             font-size: 15px;
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 22px rgba(37, 99, 235, 0.45);
+            transition: all 0.25s ease;
         }
 
         .btn-primary:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+            box-shadow: 0 6px 28px rgba(37, 99, 235, 0.65);
         }
 
         /* Hero */
         .hero {
-            max-width: 900px;
+            max-width: 960px;
             margin: 60px auto 40px;
             text-align: center;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 16px;
+            padding: 6px 18px;
             border-radius: 20px;
-            background: rgba(37, 99, 235, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(37, 99, 235, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.35);
             color: var(--accent);
             font-size: 13px;
             font-weight: 600;
@@ -146,7 +148,7 @@
         }
 
         .hero h1 {
-            font-size: 48px;
+            font-size: 50px;
             line-height: 1.25;
             font-weight: 800;
             margin-bottom: 20px;
@@ -162,7 +164,7 @@
         .hero p {
             color: var(--text-muted);
             font-size: 19px;
-            max-width: 720px;
+            max-width: 760px;
             margin: 0 auto 36px;
         }
 
@@ -173,15 +175,45 @@
             flex-wrap: wrap;
         }
 
-        /* Visual Interactive Demo / Preview Box */
+        /* Stats / Highlights */
+        .highlights {
+            max-width: 1100px;
+            margin: 40px auto 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            padding: 0 20px;
+        }
+
+        .highlight-item {
+            background: rgba(13, 21, 39, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            text-align: center;
+        }
+
+        .highlight-num {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .highlight-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Interactive Demo Box */
         .preview-box {
-            max-width: 960px;
+            max-width: 980px;
             margin: 40px auto 80px;
             padding: 24px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
         }
 
         .window-bar {
@@ -199,15 +231,15 @@
         .dot-green { background: #10B981; }
 
         .demo-screen {
-            background: #0A0E1A;
-            border: 1px solid #1F2A4C;
+            background: #080B14;
+            border: 1px solid #1C2642;
             border-radius: 12px;
             padding: 24px;
             text-align: left;
         }
 
         .demo-bubble {
-            background: #18223D;
+            background: #121A30;
             border-left: 4px solid var(--accent);
             padding: 16px 20px;
             border-radius: 8px;
@@ -229,28 +261,29 @@
         /* Features */
         .features {
             max-width: 1200px;
-            margin: 0 auto 80px;
+            margin: 0 auto 90px;
             padding: 0 20px;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 50px;
         }
 
         .section-title h2 {
-            font-size: 34px;
+            font-size: 36px;
             margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .section-title p {
             color: var(--text-muted);
-            font-size: 16px;
+            font-size: 17px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 24px;
         }
 
@@ -258,23 +291,24 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 28px;
-            transition: all 0.2s ease;
+            padding: 30px;
+            transition: all 0.25s ease;
         }
 
         .card:hover {
             border-color: #3B82F6;
+            background: var(--card-hover);
             transform: translateY(-4px);
         }
 
         .card-icon {
-            font-size: 32px;
-            margin-bottom: 16px;
+            font-size: 34px;
+            margin-bottom: 18px;
             display: inline-block;
         }
 
         .card h3 {
-            font-size: 20px;
+            font-size: 21px;
             margin-bottom: 12px;
             color: #fff;
         }
@@ -282,7 +316,135 @@
         .card p {
             color: var(--text-muted);
             font-size: 15px;
+            line-height: 1.65;
+        }
+
+        /* How it works */
+        .how-section {
+            max-width: 1050px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+
+        .step-card h4 {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            color: var(--text-muted);
+            font-size: 14px;
             line-height: 1.6;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            max-width: 720px;
+            margin: 0 auto 100px;
+            padding: 40px 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+        }
+
+        .feedback-section h2 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .feedback-section p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            font-size: 15px;
+        }
+
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+
+        .form-control {
+            background: #080B14;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
         }
 
         /* Footer */
@@ -294,9 +456,15 @@
             font-size: 14px;
         }
 
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
         @media (max-width: 768px) {
             .hero h1 { font-size: 34px; }
             .hero p { font-size: 16px; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
@@ -313,10 +481,10 @@
         <div class="nav-links">
             <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat" target="_blank" class="btn-outline">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                GitHub এ প্রজেক্ট দেখুন
+                GitHub প্রজেক্ট
             </a>
             <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat/releases" class="btn-primary" target="_blank">
-                📥 Get Application (.exe)
+                📥 Download App (.exe)
             </a>
         </div>
     </nav>
@@ -324,10 +492,10 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-badge">✨ সম্পূর্ণ নতুন সংস্করণ v1.0.0 উন্মোচিত</div>
-        <h1>যেকোনো উইন্ডোজ অ্যাপ্লিকেশনে<br><span>স্মার্ট বাংলা ও ইংরেজি</span> ভয়েস টাইপিং</h1>
-        <p>কথা বলুন নিজের স্বাভাবিক স্বর ও আবেগে। ওয়ার্ড, নোটপ্যাড, ব্রাউজার কিংবা মেসেঞ্জার—যেকোনো জায়গায় এক নিমেষে ভয়েস রূপান্তর করুন নিখুঁত টেক্সটে।</p>
+        <h1>যেকোনো উইন্ডোজ অ্যাপ্লিকেশনে<br><span>স্মার্ট বাংলা ও ইংরেজি</span> ভয়েস টাইপিং</h1>
+        <p>কথা বলুন নিজের স্বাভাবিক সুর ও এক্সপ্রেশনে। কোনো জোর করে "দাঁড়ি/কমা" বলতে হবে না। ওয়ার্ড, নোটপ্যাড, ব্রাউজার কিংবা মেসেঞ্জার—যেকোনো উইন্ডোতে মাইক্রোফোন দিয়ে সহজে ভয়েস টাইপ করুন।</p>
         <div class="hero-actions">
-            <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat/releases" class="btn-primary" target="_blank" style="font-size: 17px; padding: 14px 36px;">
+            <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat/releases" class="btn-primary" target="_blank" style="font-size: 17px; padding: 14px 38px;">
                 🚀 সফটওয়্যারটি ডাউনলোড করুন (Installer .exe)
             </a>
             <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat" target="_blank" class="btn-outline" style="font-size: 16px; padding: 14px 28px;">
@@ -336,13 +504,33 @@
         </div>
     </section>
 
+    <!-- Highlights Grid -->
+    <div class="highlights">
+        <div class="highlight-item">
+            <div class="highlight-num">১০০% ফ্রি</div>
+            <div class="highlight-label">ওপেন সোর্স ও লাইফটাইম ফ্রি</div>
+        </div>
+        <div class="highlight-item">
+            <div class="highlight-num">৩টি মোড</div>
+            <div class="highlight-label">বাংলা, ইংরেজি ও মিক্সড স্পিচ</div>
+        </div>
+        <div class="highlight-item">
+            <div class="highlight-num">স্মার্ট ক্লিপবোর্ড</div>
+            <div class="highlight-label">টেক্সট ও ছবির অটো হিস্ট্রি সেভ</div>
+        </div>
+        <div class="highlight-item">
+            <div class="highlight-num">জিরো অ্যাডমিন</div>
+            <div class="highlight-label">সাধারণ ইউজারেও ঝামেলাহীন রান</div>
+        </div>
+    </div>
+
     <!-- Visual Interactive Demo Preview -->
     <div class="preview-box">
         <div class="window-bar">
             <div class="dot dot-red"></div>
             <div class="dot dot-yellow"></div>
             <div class="dot dot-green"></div>
-            <span style="font-size: 13px; color: var(--text-muted); margin-left: 10px;">Sifat Voice Type — Live Preview</span>
+            <span style="font-size: 13px; color: var(--text-muted); margin-left: 10px;">Sifat Voice Type — Live Application Demo</span>
         </div>
         <div class="demo-screen">
             <div class="demo-bubble">
@@ -354,8 +542,8 @@
                 "আমি নিয়মিত প্রোগ্রামিং করি so guys now I am a web developer এবং নতুন নতুন প্রজেক্ট তৈরি করতে ভালোবাসি।"
             </div>
             <div class="demo-bubble" style="border-left-color: #F59E0B; margin-bottom: 0;">
-                <span class="demo-badge" style="background:#D97706;">স্মার্ট ক্লিপবোর্ড</span>
-                📋 কপি করা যেকোনো টেক্সট কিংবা ব্রাউজার থেকে কপি করা ছবি এক ক্লিকে স্থায়ীভাবে সাজানো থাকে।
+                <span class="demo-badge" style="background:#D97706;">সেন্ট্রাল ক্লিপবোর্ড</span>
+                📋 ব্রাউজার থেকে কপি করা ছবি কিংবা টেক্সট স্ক্রিনের মাঝখানে সেন্ট্রাল ক্লিপবোর্ডে স্থায়ীভাবে সংরক্ষণ থাকে।
             </div>
         </div>
     </div>
@@ -364,54 +552,100 @@
     <section class="features">
         <div class="section-title">
             <h2>শক্তিশালী ও আধুনিক ফিচারসমূহ</h2>
-            <p>আপনার প্রতিদিনের টাইপিং ও কাজকে ১০ গুণ দ্রুত করতে যা যা প্রয়োজন</p>
+            <p>আপনার প্রতিদিনের টাইপিং ও কাজকে ১০ গুণ দ্রুত করতে সম্পূর্ণ প্রস্তুত</p>
         </div>
 
         <div class="grid">
             <div class="card">
                 <div class="card-icon">🎙️</div>
                 <h3>ন্যাচারাল এক্সপ্রেশন পাঙ্কচুয়েশন</h3>
-                <p>মুখে জোর করে দাঁড়ি বা কমা বলতে হবে না। আপনার কথার বিরতি, প্রশ্নবোধক ভাব এবং সমাপ্তি অনুযায়ী সফটওয়্যারটি নিজেই সঠিক জায়গায় দাঁড়ি, কমা ও প্রশ্নচিহ্ন বসিয়ে দেবে।</p>
+                <p>অসম্পূর্ণ কথা বললে জোর করে দাঁড়ি বসবে না। সম্পূর্ণ বাক্য ও প্রশ্নবোধক এক্সপ্রেশন অনুযায়ী স্বয়ংক্রিয়ভাবে সঠিক পাঙ্কচুয়েশন যোগ হবে।</p>
             </div>
 
             <div class="card">
                 <div class="card-icon">🌐</div>
                 <h3>অ্যাডভান্সড মিক্সড স্পিচ ফ্লো</h3>
-                <p>বাংলা বলতে বলতে হঠাৎ একটানা ইংরেজিতে কথা বলা শুরু করলেও সফটওয়্যারটি স্বয়ংক্রিয়ভাবে বুঝে নিয়ে ইংরেজি হরফে রূপান্তর করে দেয়।</p>
+                <p>বাংলা বলতে বলতে হুট করে একনাগাড়ে ইংরেজিতে কথা বলা শুরু করলেও সফটওয়্যারটি স্বয়ংক্রিয়ভাবে বুঝে নিয়ে ইংরেজি হরফে রূপান্তর করে দেয়।</p>
             </div>
 
             <div class="card">
                 <div class="card-icon">📋</div>
                 <h3>সেন্ট্রাল ক্লিপবোর্ড ও ইমেজ হিস্ট্রি</h3>
-                <p>Ctrl + C চেপে ব্রাউজার থেকে কোনো ছবি কিংবা যেকোনো টেক্সট কপি করলেই তা স্ক্রিনের মাঝখানে ভাসমান ক্লিপবোর্ডে স্থায়ীভাবে জমা থাকবে।</p>
+                <p>Ctrl + C চেপে ব্রাউজার থেকে কোনো ছবি কিংবা যেকোনো টেক্সট কপি করলেই তা স্ক্রিনের মাঝখানে ভাসমান ক্লিপবোর্ডে স্থায়ীভাবে জমা থাকবে।</p>
             </div>
 
             <div class="card">
                 <div class="card-icon">⚡</div>
                 <h3>গ্লোবাল হটকি সাপোর্ট</h3>
-                <p>Ctrl+Win চেপে বাংলা, Shift+Win চেপে ইংরেজি, এবং Ctrl+Alt+Win চেপে মিক্সড মোডে কথা বলুন। উইন্ডোজের যেকোনো সফটওয়্যারেই এটি সাথে সাথে কাজ করে।</p>
+                <p>Ctrl+Win চেপে বাংলা, Shift+Win চেপে ইংরেজি, এবং Ctrl+Alt+Win চেপে মিক্সড মোডে কথা বলুন। উইন্ডোজের যেকোনো সফটওয়্যারে কাজ করে।</p>
             </div>
 
             <div class="card">
                 <div class="card-icon">💻</div>
                 <h3>পিসি অন হতেই ব্যাকগ্রাউন্ড অটো-রান</h3>
-                <p>কম্পিউটার অন করলেই ব্যাকগ্রাউন্ড ও সিস্টেম ট্রেতে স্বয়ংক্রিয়ভাবে চালু হয়ে যায়। প্রতিবার অ্যাডমিনিস্ট্রেটর হিসেবে রান করার কোনো ঝামেলা নেই।</p>
+                <p>কম্পিউটার অন করলেই ব্যাকগ্রাউন্ড ও সিস্টেম ট্রেতে স্বয়ংক্রিয়ভাবে চালু হয়ে যায়। প্রতিবার অ্যাডমিনিস্ট্রেটর হিসেবে রান করার ঝামেলা নেই।</p>
             </div>
 
             <div class="card">
                 <div class="card-icon">🔒</div>
                 <h3>১০০% লোকাল প্রাইভেসি ও ফ্রি</h3>
-                <p>আপনার ক্লিপবোর্ড এবং রেকর্ডিং হিস্ট্রি সম্পূর্ণ আপনার পিসির ভেতর এনক্রিপ্টেড ও লোকাল মেমরিতে সংরক্ষিত থাকে। কোনো ডাটা বাইরে পাঠানো হয় না।</p>
+                <p>আপনার ক্লিপবোর্ড এবং রেকর্ডিং হিস্ট্রি সম্পূর্ণ আপনার পিসির ভেতর লোকাল মেমরিতে সংরক্ষিত থাকে। কোনো ডাটা বাইরে পাঠানো হয় না।</p>
             </div>
         </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-section">
+        <div class="section-title">
+            <h2>কীভাবে কাজ করে?</h2>
+            <p>মাত্র ৩টি সহজ ধাপে ভয়েস টাইপিং শুরু করুন</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">১</div>
+                <h4>ইনস্টলারটি ডাউনলোড করুন</h4>
+                <p>ডাউনলোড বাটনে ক্লিক করে সেটাপ ফাইলটি (.exe) নামিয়ে ডাবল ক্লিক করে ইনস্টল করুন।</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">২</div>
+                <h4>হটকি চেপে কথা বলুন</h4>
+                <p>যেকোনো অ্যাপে কার্সর রেখে <strong>Ctrl + Win</strong> (বাংলা) বা <strong>Shift + Win</strong> (ইংরেজি) চেপে কথা বলুন।</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">৩</div>
+                <h4>ছেড়ে দিলেই অটো-টাইপ</h4>
+                <p>কথা শেষ করে কিবোর্ড ছেড়ে দিলে স্বয়ংক্রিয়ভাবে নিখুঁত টেক্সটটি টাইপ হয়ে পেস্ট হয়ে যাবে।</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section class="feedback-section">
+        <h2>💬 আপনার মতামত বা ফিডব্যাক জানান</h2>
+        <p>সফটওয়্যারটি ব্যবহারের অভিজ্ঞতা কেমন? আপনার মূল্যবান মতামত ও পরামর্শ আমাদেরকে জানান।</p>
+        
+        <form class="feedback-form" action="https://formspree.io/f/xbjnjzvw" method="POST">
+            <div class="form-group">
+                <label for="name">আপনার নাম:</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="যেমন: সিফাত" required>
+            </div>
+            <div class="form-group">
+                <label for="email">ইমেইল (ঐচ্ছিক):</label>
+                <input type="email" id="email" name="_replyto" class="form-control" placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label for="feedback">আপনার মন্তব্য / ফিডব্যাক:</label>
+                <textarea id="feedback" name="message" class="form-control" placeholder="সফটওয়্যারটি সম্পর্কে আপনার অভিজ্ঞতা বা কোনো সমস্যা থাকলে লিখুন..." required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">ফিডব্যাক সাবমিট করুন ✨</button>
+        </form>
     </section>
 
     <!-- Footer -->
     <footer>
         <p>© 2026 <strong>Sifat Voice Type</strong>. Created with ❤️ by <strong>Majharul Islam Sifat</strong>.</p>
-        <p style="margin-top: 8px; font-size: 13px;">Open Source AI Productivity Project for Windows</p>
+        <p style="margin-top: 8px; font-size: 13px;">Open Source AI Productivity Project for Windows • Hosted on <a href="https://github.com/mi-sifat/Voice-to-Text-by-Sifat" target="_blank">GitHub</a></p>
     </footer>
 
 </body>
 </html>
-

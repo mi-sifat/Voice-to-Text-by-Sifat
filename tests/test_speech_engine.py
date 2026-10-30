@@ -2,7 +2,16 @@ import io
 import wave
 import pytest
 from app.recorder import AudioRecorder
-from app.speech_engine import SpeechEngine
+from app.speech_engine import SpeechEngine, auto_punctuate_by_expression
+
+def test_bengali_transcription_does_not_add_sentence_ending_danda():
+    assert auto_punctuate_by_expression("আমি আজ এখানে কাজ করছি", "bn-BD") == "আমি আজ এখানে কাজ করছি"
+
+def test_bengali_question_punctuation_is_preserved():
+    assert auto_punctuate_by_expression("আপনি কেমন আছেন", "bn-BD") == "আপনি কেমন আছেন?"
+
+def test_existing_bengali_sentence_punctuation_is_preserved():
+    assert auto_punctuate_by_expression("আমি আজ এখানে কাজ করছি।", "bn-BD") == "আমি আজ এখানে কাজ করছি।"
 
 def test_recorder_empty_stop():
     recorder = AudioRecorder()

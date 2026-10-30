@@ -36,6 +36,9 @@ SolidCompression=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
+; Detect the running app before install/uninstall so its files are not left behind.
+AppMutex=Global\SifatVoiceType_SingleInstance_Mutex
+
 ; Modern UI Style
 WizardStyle=modern
 
@@ -73,3 +76,9 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 ; Clean up any logs or temp files generated in app directory
 Type: filesandordirs; Name: "{app}"
 
+[Code]
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    RegDeleteValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'SifatVoiceType');
+end;
